@@ -1,0 +1,283 @@
+```{r}
+#install.packages('corrplot')
+#install.packages('ggplot2')
+#install.packages('DataExplorer')
+#install.packages('e1071')
+#install.packages('caret')
+#install.packages('dplyr')
+
+```
+
+```{r}
+library(corrplot)
+library(ggplot2)
+library(DataExplorer)
+library(e1071)
+library(caret)
+library(dplyr)
+library(GGally)
+library(PerformanceAnalytics)
+set.seed(123)
+```
+
+```{r}
+job <- read.csv("jobclassinfo2.csv")
+job <-job[,-1]
+```
+
+```{r}
+View(job)
+job
+```
+
+```{r}
+colnum <- ncol(job)
+print(paste("num of col : ",colnum))
+```
+
+```{r show number row}
+rownum <- nrow(job)
+print(paste("num of row : ", rownum))
+```
+
+```{r show name column}
+print(colnames(job))
+```
+
+```{r show struachre date }
+str(job)
+```
+
+```{r show summary date}
+summary(job)
+```
+
+```{r}
+png("plot_missing_beffor.png")
+plot_missing(job)
+```
+
+```{r}
+png("plot_missing_affter.png")
+job[job==0]<- NA
+plot_missing(job)
+```
+
+```{r}
+job[is.na(job)]<- 0
+```
+
+```{r}
+data <- job[,-2]
+data <- data[,-3]
+```
+
+```{r}
+data$PG<-gsub("PG", "", data$PG)
+data$PG<-as.numeric(data$PG)
+str(data)
+```
+
+```{r}
+png("corrplot.png")
+corrplot(cor(data))
+```
+
+```{r}
+summary(data)
+```
+
+```{r}
+png("barplot.png")
+sumd<-data[,-2]
+sum_col<- apply(sumd, 2, median)
+barplot(sum_col,col ='red',main = 'Application rate' )
+```
+
+```{r}
+data$PG<-as.factor(data$PG)
+str(data)
+table(data$PG)
+```
+
+```{r}
+dataP1<-sumd[,1:3]
+dataP2<-sumd[,4:7]
+dataP3<-sumd[,8:10]
+png("plot1.png")
+plot(dataP1,main ="relation  elements " )
+```
+
+```{r}
+png("plot2.png")
+plot(dataP2,main ="relation  elements " )
+```
+
+```{r}
+png("plot3.png")
+plot(dataP3,main ="relation  elements " )
+```
+
+```{r}
+png("plot.png")
+plot(sumd,main ="relation  elements " )
+```
+
+```{r}
+png("ggplot_JobFamily_PG.png")
+ggplot(data, aes(x=JobFamily, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_JobClass_PG.png")
+ggplot(data, aes(x=JobClass, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_PayGrade_PG.png")
+ggplot(data, aes(x=PayGrade, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_EducationLevel_PG.png")
+ggplot(data, aes(x=EducationLevel, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_Experience_PG.png")
+ggplot(data, aes(x=Experience, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_OrgImpact_PG.png")
+ggplot(data, aes(x=OrgImpact, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_JobClass_PG.png")
+ggplot(data, aes(x=ProblemSolving, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_Supervision_PG.png")
+ggplot(data, aes(x=Supervision, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ylab("PG")
+```
+
+```{r}
+png("ggplot_ContactLevel_PG.png")
+ggplot(data, aes(x=ContactLevel, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ ylab("PG")
+```
+
+```{r}
+png("ggplot_ContactLevel_PG.png")
+ggplot(data, aes(x=ContactLevel, fill=PG,colour =PG)) + geom_density(alpha = 0.1)+ ylab("PG")
+```
+
+```{r}
+png("boxplot.png")
+boxplot(sumd,main ="")
+```
+
+```{r}
+png("featurePlot1.png")
+featurePlot(x = job[, 6:12], y = job$PG, plot = "density", auto.key = list(columns = 2))
+```
+
+```{r}
+png("featurePlot2.png")
+featurePlot(x = job[, 6:12], y =job$PG, plot = "box", auto.key = list(columns = 2))
+```
+
+```{r}
+png("ggplot_factor_PG.png")
+ggplot(job, aes(x = factor(PG))) +
+geom_bar(stat = "count", width = 0.7, fill = "steelblue") +
+theme_minimal() + coord_flip()
+```
+
+```{r}
+png("ggplot_factor_JobFamilyDescription.png")
+ggplot(job, aes(x = factor(JobFamilyDescription))) +
+geom_bar(stat = "count", width = 0.7, fill = "steelblue") +
+theme_minimal() + coord_flip()
+```
+
+```{r}
+png("ggpairs.png")
+ggpairs(job[, 6:12],y = job$PG, lower=list(continuous="smooth"))+ theme_bw()+
+labs(title="")+
+theme(plot.title=element_text(face='bold',color='black',hjust=0.5,size=10))
+```
+
+```{r}
+png("ggcorr.png")
+ggcorr(job[, 6:12], name = "corr", label = TRUE)+
+  theme(legend.position="none")+
+labs(title="")+
+theme(plot.title=element_text(face='bold',color='black',hjust=0.5,size=12))
+```
+
+```{r}
+png("Correlation.png")
+chart.Correlation(job[, 6:12],histogram=TRUE, col="grey10", pch=1, main="")
+```
+
+```{r}
+clusters <- kmeans(data$PG, 5)
+clusters 
+```
+
+```{r}
+index <- createDataPartition(y = data$PG, p = 0.7, list = F)
+trainData <- data[index,]
+testData <- data[-index,]
+dim(data)
+dim(trainData)
+dim(testData)
+```
+
+```{r}
+traincontrol <- trainControl(method="cv", number=10)
+```
+
+```{r}
+trainSvmRadial <- train(PG~., trainData, method = "svmRadial", preProcess = c("center","scale")
+                          ,metric = "Accuracy",tuneGrid = expand.grid(.sigma = 0.5, .C = 10)
+                          ,trControl = traincontrol)
+PredictSvmRadial <- predict(trainSvmRadial, testData)
+confusionMatrix(testData$PG, PredictSvmRadial, mode = "everything")
+```
+
+```{r}
+classifier_nB <- train(PG~., trainData,'nb',trControl=traincontrol)
+PredictClassifier_nB <- predict(classifier_nB, testData)
+confusionMatrix(testData$PG, PredictClassifier_nB, mode = "everything")
+```
+
+```{r}
+trainRpart<-train(PG ~ ., data=trainData, method="rpart",trControl = traincontrol)
+PredictRpart <- predict(trainRpart, testData)
+confusionMatrix(testData$PG, PredictRpart, mode = "everything")
+```
+
+```{r}
+trainIda <- train(PG~FinancialBudget, data=trainData, method="lda", metric="Accuracy", trControl=traincontrol,preProcess=c("center", "scale"))
+PredictIda <- predict(trainIda, testData)
+confusionMatrix(testData$PG,PredictIda, mode = "everything")
+```
+
+```{r}
+modelResamples <- resamples(list(svm = trainSvmRadial, nb = classifier_nB,rpart=trainRpart,ide=trainIda))
+```
+
+```{r}
+png("bwplot_Kappa_Accuracy.png")
+bwplot(modelResamples, metric = c("Kappa", "Accuracy"))
+```
+
+```{r}
+png("densityplot_Kappa_Accuracy.png")
+densityplot(modelResamples, metric = c("Kappa", "Accuracy"), auto.key = list(coloumns = 3))
+```
+
+
